@@ -1,32 +1,34 @@
 import 'dart:ui';
+
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'model/builder.dart';
-import 'model/modal_theme.dart';
-import 'model/modal_config.dart';
-import 'model/choice_theme.dart';
-import 'model/choice_config.dart';
-import 'model/choice_item.dart';
-import 'model/choice_loader.dart';
-import 'model/group_data.dart';
-import 'model/group_config.dart';
-import 'model/group_style.dart';
-import 'model/group_sort.dart';
-import 'model/chosen.dart';
-import 'state/choices.dart';
-import 'state/filter.dart';
+
+import 'choices_empty.dart';
+import 'choices_list.dart';
 // import 'state/selected.dart';
 // import 'state/selection.dart';
 import 'choices_resolver.dart';
-import 'tile/tile.dart';
-import 'utils/debouncer.dart';
 import 'group_header.dart';
-import 'choices_list.dart';
-import 'choices_empty.dart';
 import 'modal.dart';
+import 'model/builder.dart';
+import 'model/choice_config.dart';
+import 'model/choice_item.dart';
+import 'model/choice_loader.dart';
+import 'model/choice_theme.dart';
+import 'model/chosen.dart';
+import 'model/group_config.dart';
+import 'model/group_data.dart';
+import 'model/group_sort.dart';
+import 'model/group_style.dart';
+import 'model/modal_config.dart';
+import 'model/modal_theme.dart';
 import 'pagination.dart';
+import 'state/choices.dart';
+import 'state/filter.dart';
 import 'text.dart';
 import 'text_error.dart';
+import 'tile/tile.dart';
+import 'utils/debouncer.dart';
 
 /// Callback for event modal will close
 typedef Future<bool> S2ModalWillClose<T>(T state);
@@ -1119,7 +1121,9 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
       autofocus: true,
       controller: filter!.ctrl,
       style: TextStyle(color: Colors.black),
-      cursorColor: modalConfig.isFullPage ? Colors.black : theme.cursorColor,
+      cursorColor: modalConfig.isFullPage
+          ? Colors.black
+          : theme.textSelectionTheme.cursorColor,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration.collapsed(
         hintText: modalConfig.filterHint ?? 'Search on $title',
@@ -1182,14 +1186,16 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
           child: Padding(
             padding: modalConfig.confirmMargin ??
                 const EdgeInsets.fromLTRB(0, 0, 10, 0),
-            child: FlatButton.icon(
+            child: ElevatedButton.icon(
               icon: modalConfig.confirmIcon!,
               label: modalConfig.confirmLabel!,
-              color:
-                  modalConfig.confirmIsDark ? modalConfig.confirmColor : null,
-              textColor: modalConfig.confirmIsLight
-                  ? modalConfig.confirmColor
-                  : Colors.white,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: modalConfig.confirmIsLight
+                    ? modalConfig.confirmColor
+                    : Colors.white,
+                foregroundColor:
+                    modalConfig.confirmIsDark ? modalConfig.confirmColor : null,
+              ),
               onPressed: onPressed,
             ),
           ),
@@ -1199,14 +1205,16 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
           child: Padding(
             padding: modalConfig.confirmMargin ??
                 const EdgeInsets.fromLTRB(0, 0, 10, 0),
-            child: FlatButton(
+            child: ElevatedButton(
               child: modalConfig.confirmLabel!,
-              color: modalConfig.confirmIsDark
-                  ? modalConfig.confirmColor ?? Colors.blueGrey
-                  : null,
-              textColor: modalConfig.confirmIsLight
-                  ? modalConfig.confirmColor
-                  : Colors.white,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: modalConfig.confirmIsDark
+                    ? modalConfig.confirmColor ?? Colors.blueGrey
+                    : null,
+                foregroundColor: modalConfig.confirmIsLight
+                    ? modalConfig.confirmColor
+                    : Colors.white,
+              ),
               onPressed: onPressed,
             ),
           ),
@@ -1544,7 +1552,7 @@ abstract class S2State<T> extends State<SmartSelect<T>> {
           isScrollControlled: true,
           builder: (_) {
             final MediaQueryData mediaQuery =
-                MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+                MediaQueryData.fromWindow(WidgetsBinding.instance.window);
             final double topObstructions = mediaQuery.viewPadding.top;
             final double bottomObstructions = mediaQuery.viewPadding.bottom;
             final double keyboardHeight = mediaQuery.viewInsets.bottom;
